@@ -1,0 +1,26 @@
+id: ExpressionDensityPlot-{VER}
+meta:
+  title: Expression Density Plot {VER}
+  subtitle: >-
+    Examine distribution of gene expression values for a specific gene
+  description: >
+    Examine distribution of gene expression values for a specific gene
+endpoints:
+  backend:
+    type: docker
+    image: {GBOX}
+    cmd: python ./expressiondensityplot.py
+frontend:
+  imports:
+    - kind: assay
+      label: The assay to take expression values from
+      injectInto: assay
+    - kind: sampleCoords
+      label: The visualization to plot
+      injectInto: viz_data
+  args:
+    - type: text
+      injectInto: gene_ids
+      label: The gene ID (s) to use for coloring (comma separated... XIST, GAS7)
+      description: Must be gene IDs appearing in the assay selected.
+      default: ''
