@@ -35,7 +35,7 @@ def main():
 
         plt.subplot(1, 1, 1)
         plt.title('Gene expression level distribution')
-        sns.distplot(df.loc[gene,:].values.tolist(), bins=int(100), color = 'darkblue', kde_kws={'linewidth': 2})
+        sns.distplot(df.loc[gene,:].to_list(), bins=int(100), color = 'darkblue', kde_kws={'linewidth': 2})
         plt.ylabel('Frequency')
         plt.xlabel('Gene expression')
 
