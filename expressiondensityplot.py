@@ -35,7 +35,7 @@ def main():
         plt.figure()
 
         glm = PoissonRegressor()
-        glm.fit(range(len(df.columns)), df.loc[gene, :].to_list())
+        glm.fit(range(len(df.columns)), df.loc[gene, :].T)
 
         gn.add_result("Statistic {}".format(glm.get_params()), "markdown")
 
