@@ -10,6 +10,7 @@ from matplotlib.colors import LinearSegmentedColormap
 from matplotlib import colors
 from itertools import cycle
 import seaborn as sns
+from sklearn.linear_model import PoissonRegressor
 
 import os
 import traceback
@@ -32,6 +33,12 @@ def main():
 
     for gene in gene_ids:
         plt.figure()
+
+        glm = PoissonRegressor()
+        glm.fit(range(len(df.columns)), df.loc[gene, :].to_list())
+
+        gn.add_result("Statistic {}".format(glm.get_params()), "markdown"))
+
 
         plt.subplot(1, 1, 1)
         plt.title('Gene expression level distribution')
