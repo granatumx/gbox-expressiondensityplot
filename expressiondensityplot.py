@@ -24,6 +24,30 @@ import sys
 
 from gbox_py_helpers import bug_report
 
+def confint(X, alpha=0.05):
+    resultdict = {}
+    meanbounds = sms.DescrStatsW(X).tconfint_mean(alpha=alpha)
+    resultdict["low"] = meanbounds[0]
+    resultdict["high"] = meanbounds[1]
+    resultdict["n"] = len(X)
+    return resultdict
+
+def dist(int1, int2):
+    if int1["low"] >= int2["high"]:
+        return int1["low"] - int2["high"]
+    if int2["low"] >= int1["high"]:
+        return int2["low"] - int1["high"]
+    return 0.0
+
+# return hash of labels associated to its data
+def trygmonvector(gm, X):
+    vectors = gm.predict(np.array(X).reshape(-1, 1))
+    inv_map = {}
+    for i, v in enumerate(vectors):
+        inv_map[v] = inv_map.get(v, []) + [X[i]]
+    return inv_map
+
+
 def model1(t, coeffs):
     lamb1 = coeffs[0]
     return poisson.pmf(np.round(t), lamb1)
@@ -105,7 +129,7 @@ def fit_poissons(X, alpha=0.05, min_dist=0.2, min_zscore=2):
     return {"n":1, "coeffs":coeffs}
 
 def plot_fits(row, alpha=0.05, min_dist=0.2, min_zscore = 2):
-    params = fit_poissons(row)
+    params = fit_poissons(row, alpha=alpha, min_dist=min_dist, min_zscore=min_zscore)
     X, bins, blah = plt.hist(sample, bins="auto", density=True)
     bins = (bins[1:] + bins[:-1]) / 2.0
     plt.clf()
