@@ -256,6 +256,7 @@ def main():
             plt.ylabel('Frequency')
             plt.xlabel('Gene expression')
 
+        plt.legend()
         plt.tight_layout()
 
         caption = ( "The distribution of expression levels for gene {}.".format(gene))
