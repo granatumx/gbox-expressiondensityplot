@@ -131,7 +131,7 @@ def fit_poissons(X, alpha=0.05, min_dist=0.2, min_zscore=2):
 
 def plot_fits(row, alpha=0.05, min_dist=0.2, min_zscore = 2):
     params = fit_poissons(row, alpha=alpha, min_dist=min_dist, min_zscore=min_zscore)
-    X, bins, blah = np.histogram(row, bins=int(np.round(np.max(row)-np.min(row))), density=True)
+    X, bins = np.histogram(row, bins=int(np.round(np.max(row)-np.min(row))), density=True)
     bins = (bins[1:] + bins[:-1]) / 2.0
     sns.kdeplot(row, shade=True)
     if params["n"] == 1:
