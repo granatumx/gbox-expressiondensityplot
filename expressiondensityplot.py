@@ -165,20 +165,20 @@ def main():
         inv_map[v] = inv_map.get(v, []) + [k]
 
     for gene in gene_ids:
-        plt.figure()
-
-        plt.subplot(1, 1, 1)
-        plt.title('Gene expression level distribution')
         for k, v in inv_map.items():
+            plt.figure()
+
+            plt.subplot(1, 1, 1)
+            plt.title('Gene expression level distribution')
             plot_fits(df.loc[gene,v].to_list(), alpha=0.05, min_dist=0.1, min_zscore=2)
-        # sns.distplot(df.loc[gene,:].to_list(), bins=int(100), color = 'darkblue', kde_kws={'linewidth': 2})
-        plt.ylabel('Frequency')
-        plt.xlabel('Gene expression')
+            # sns.distplot(df.loc[gene,:].to_list(), bins=int(100), color = 'darkblue', kde_kws={'linewidth': 2})
+            plt.ylabel('Frequency')
+            plt.xlabel('Gene expression')
 
-        plt.tight_layout()
+            plt.tight_layout()
 
-        caption = ( "The distribution of expression levels for gene {}.".format(gene))
-        gn.add_current_figure_to_results(caption, zoom=1, dpi=75)
+            caption = ( "The distribution of expression levels for gene {} and cluster {}.".format(gene, k))
+            gn.add_current_figure_to_results(caption, zoom=1, dpi=75)
 
     gn.commit()
 
