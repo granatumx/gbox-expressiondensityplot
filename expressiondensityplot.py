@@ -135,9 +135,6 @@ def plot_fits(row, alpha=0.05, min_dist=0.2, min_zscore = 2):
     bins = (bins[1:] + bins[:-1]) / 2.0
     plt.clf()
     sns.kdeplot(row, shade=True, color="r")
-    print(params["coeffs"].x)
-    print(bins)
-    print(model2(bins, params["coeffs"].x))
     if params["n"] == 1:
         plt.plot(bins, model1(bins, params["coeffs"].x), "rx")
     else:
