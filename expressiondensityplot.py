@@ -199,7 +199,7 @@ def plot_two_poissons_from_params(row, params, color="r", label=""):   # Return 
     bins = np.arange(np.min(row), np.max(row))
     X, bins = np.histogram(row, bins=bins, density=True)   # Sample histogram to pull out bins
     mbins = (bins[1:] + bins[:-1]) / 2.0
-    sns.kdeplot(row, bins=bins, shade=False, label=label, kde_kws={'bw':1})                 # Plot histogram for cluster
+    sns.histplot(row, binwidth=1, label=label, element="poly", fill=False)                 # Plot histogram for cluster
     plt.axvline(x=params["coeffs"].x[1], color=color)          # Show where the ref's distributions are
     plt.axvline(x=params["coeffs"].x[2], color=color)          # Show where the ref's distributions are
     return mbins
