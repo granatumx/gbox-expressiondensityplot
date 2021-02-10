@@ -105,11 +105,11 @@ def fit_poissons(X, alpha=0.05, min_dist=0.2, min_zscore=2):
     return {"n":1, "coeffs":coeffs}
 
 def plot_fits(row, alpha=0.05, min_dist=0.2, min_zscore = 2):
-    params = fit_poissons(sample)
+    params = fit_poissons(row)
     X, bins, blah = plt.hist(sample, bins="auto", density=True)
     bins = (bins[1:] + bins[:-1]) / 2.0
     plt.clf()
-    sns.kdeplot(sample, shade=True, color="r")
+    sns.kdeplot(row, shade=True, color="r")
     print(params["coeffs"].x)
     print(bins)
     print(model2(bins, params["coeffs"].x))
