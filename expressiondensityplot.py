@@ -14,6 +14,7 @@ from scipy.stats import poisson
 from scipy.optimize import least_squares
 import seaborn as sns
 import statistics as s
+import statsmodels.stats.api as sms
 
 
 from sklearn.mixture import GaussianMixture as GM
