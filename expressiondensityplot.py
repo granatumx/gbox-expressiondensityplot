@@ -129,7 +129,7 @@ def fit_poissons(X, alpha=0.05, min_dist=0.2, min_zscore=2):
     coeffs = fit_data_one_poisson(X, [mean1])
     return {"n":1, "coeffs":coeffs}
 
-def plot_fits(row, color=c, alpha=0.05, min_dist=0.2, min_zscore = 2):
+def plot_fits(row, alpha=0.05, min_dist=0.2, min_zscore = 2):
     params = fit_poissons(row, alpha=alpha, min_dist=min_dist, min_zscore=min_zscore)
     X, bins, blah = plt.hist(row, bins=np.round(np.max(row)-np.min(row)), density=True)
     bins = (bins[1:] + bins[:-1]) / 2.0
