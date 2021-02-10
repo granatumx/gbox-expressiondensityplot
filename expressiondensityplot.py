@@ -129,12 +129,12 @@ def fit_poissons(X, alpha=0.05, min_dist=0.2, min_zscore=2):
     coeffs = fit_data_one_poisson(X, [mean1])
     return {"n":1, "coeffs":coeffs}
 
-def plot_fits(row, alpha=0.05, min_dist=0.2, min_zscore = 2):
+def plot_fits(row, color=c, alpha=0.05, min_dist=0.2, min_zscore = 2):
     params = fit_poissons(row, alpha=alpha, min_dist=min_dist, min_zscore=min_zscore)
-    X, bins, blah = plt.hist(row, bins="auto", density=True)
+    X, bins, blah = plt.hist(row, bins=np.round(np.max(row)-np.min(row)), density=True)
     bins = (bins[1:] + bins[:-1]) / 2.0
     plt.clf()
-    sns.kdeplot(row, shade=True, color="r")
+    sns.kdeplot(row, shade=True)
     if params["n"] == 1:
         plt.plot(bins, model1(bins, params["coeffs"].x), "rx")
     else:
@@ -161,12 +161,17 @@ def main():
     coords = sample_coords.get("coords")
     dim_names = sample_coords.get("dimNames")
 
+    inv_map = {}
+    for k, v in groups.items():
+        inv_map[v] = inv_map.get(v, []) + [k]
+
     for gene in gene_ids:
         plt.figure()
 
         plt.subplot(1, 1, 1)
         plt.title('Gene expression level distribution')
-        plot_fits(df.loc[gene,:].to_list(), alpha=0.05, min_dist=0.1, min_zscore=2)
+        for k, v in inv_map.items():
+            plot_fits(df.loc[gene,v].to_list(), alpha=0.05, min_dist=0.1, min_zscore=2)
         # sns.distplot(df.loc[gene,:].to_list(), bins=int(100), color = 'darkblue', kde_kws={'linewidth': 2})
         plt.ylabel('Frequency')
         plt.xlabel('Gene expression')
