@@ -198,7 +198,7 @@ def get_weight_with_statistic(row, params):   # Returns a
 def plot_two_poissons_from_params(row, params, color="r", label=""):   # Return the bins
     X, bins = np.histogram(row, bins="auto", density=True)   # Sample histogram to pull out bins
     bins = (bins[1:] + bins[:-1]) / 2.0
-    sns.kdeplot(row, shade=False, label=label)                 # Plot histogram for cluster
+    sns.kdeplot(row, shade=False, label=label, kde_kws={'bw':1})                 # Plot histogram for cluster
     plt.axvline(x=params["coeffs"].x[1], color=color)          # Show where the ref's distributions are
     plt.axvline(x=params["coeffs"].x[2], color=color)          # Show where the ref's distributions are
     return bins
