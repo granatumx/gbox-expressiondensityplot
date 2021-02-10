@@ -18,6 +18,9 @@ frontend:
     - kind: sampleCoords
       label: The visualization to plot
       injectInto: viz_data
+    - kind: sampleMeta
+      label: Labels for splitting data
+      injectInto: groups
   args:
     - type: text
       injectInto: gene_ids
