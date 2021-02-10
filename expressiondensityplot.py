@@ -146,6 +146,7 @@ def one_or_two_mixtures(X, alpha=0.05, min_dist=0.2, min_zscore=2):
 
 # First transform X into log(X)+c such that it does not go below 0, X is a list
 def fit_poissons(X, alpha=0.05, min_dist=0.2, min_zscore=2):
+    X = np.array(X)
     shift = np.min(X) - 1  # Needed later to shift back
     Xarr = np.log(X - shift)
     res = one_or_two_mixtures(Xarr.tolist(), alpha=0.05, min_dist=min_dist, min_zscore=min_zscore)
