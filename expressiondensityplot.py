@@ -233,7 +233,7 @@ def main():
     gn = Granatum()
 
     sample_coords = gn.get_import("viz_data")
-    df = gn.pandas_from_assay(gn.get_import("assay"))*10.0
+    df = gn.pandas_from_assay(gn.get_import("assay"))
     gene_ids = parse(gn.get_arg("gene_ids"))
     groups = gn.get_import("groups")
 
