@@ -245,7 +245,7 @@ def main():
     for gene in gene_ids:
         plt.figure()
         # First form a statistic for all values, also puts out plot
-        params = plot_fits(df.loc[gene, :], color="r", alpha=0.05, min_dist=0.1, min_zscore=2, label="All")
+        params = plot_fits(df.loc[gene, :].to_list(), color="r", alpha=0.05, min_dist=0.1, min_zscore=2, label="All")
         for k, v in inv_map.items():
 
             plt.subplot(1, 1, 1)
