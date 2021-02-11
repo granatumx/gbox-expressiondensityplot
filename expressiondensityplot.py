@@ -175,9 +175,10 @@ def fit_poissons(X, alpha=0.05, min_dist=0.2, min_zscore=2):
             return {"n": 2, "coeffs": coeffs}
 
     print("Only have one!")
-    mean1 = np.mean(X)
+    Xarr = np.array(X)
+    mean1 = np.mean(Xarr)
     mean2 = mean1 + min_zscore * np.sqrt(mean1)
-    mean1 = np.mean(X[X < mean2 - np.sqrt(mean2) / 2.0])
+    mean1 = np.mean(Xarr[Xarr < mean2 - np.sqrt(mean2) / 2.0])
 
     coeffs = fit_poissons_fixed_means(X, mean1, mean2)
     print("Alpha = {}".format(coeffs.x[0]))
