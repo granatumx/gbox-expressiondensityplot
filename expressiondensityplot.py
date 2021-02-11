@@ -190,7 +190,7 @@ def percent_upregulation(a):
     return 100.0*(1.0/(a+1.0))
 
 
-def upregulation_from_gaussian(X, mean, std, min_zscore=2):
+def upregulation_from_gaussian(X, mean):
     X = np.array(X)
     return 100.0*np.size(X[X-mean > 0]) / np.size(X)
 
@@ -216,7 +216,7 @@ def plot_two_poissons_from_params(row, params, color="r", label=""):   # Return 
 
 def plot_predict(row, params, color="r", alpha=0.05, min_dist=0.1, min_zscore = 2, label=""):
     if params["n"] == 1:
-        pt_up = upregulation_from_gaussian(row, params["coeffs"][0], params["coeffs"][1], min_zscore=min_zscore)
+        pt_up = upregulation_from_gaussian(row, params["coeffs"][0])
         plot_hist(row, label=label+" +{:.0f}%".format(pt_up))
         return pt_up
 
