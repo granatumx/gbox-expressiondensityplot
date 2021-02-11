@@ -269,7 +269,7 @@ def main():
 
             plt.subplot(1, 1, 1)
             plt.title('Gene expression level distribution for each cluster')
-            plot_poisson(df.loc[gene, v].to_list(), params, label=k)
+            plot_predict(df.loc[gene, v].to_list(), params, label=k)
             # sns.distplot(df.loc[gene,:].to_list(), bins=int(100), color = 'darkblue', kde_kws={'linewidth': 2})
             plt.ylabel('Frequency')
             plt.xlabel('Gene expression')
