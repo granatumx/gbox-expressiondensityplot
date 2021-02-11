@@ -143,10 +143,10 @@ def one_or_two_mixtures(X, alpha=0.05, min_dist=0.2, min_zscore=2):
                   "n": [mi2["n"], mi1["n"]]}
     return result
 
-
 # First transform X into log(X)+c such that it does not go below 0, X is a list
 def fit_poissons(X, alpha=0.05, min_dist=0.2, min_zscore=2):
-    X = np.array(X)
+    if np.mean(X) < 5:  # Can't really form a good statistic
+        return {"n": 1, "coeffs": [np.mean(X), np.std(X)]}
     shift = np.min(X) - 1  # Needed later to shift back
     Xarr = np.log(X - shift)
     res = one_or_two_mixtures(Xarr.tolist(), alpha=0.05, min_dist=min_dist, min_zscore=min_zscore)
@@ -177,7 +177,7 @@ def fit_poissons(X, alpha=0.05, min_dist=0.2, min_zscore=2):
     print("Only have one!")
     mean1 = np.mean(X)
     mean2 = mean1 + min_zscore * np.sqrt(mean1)
-    mean1 = np.mean(X[X < (mean2 - np.sqrt(mean2) / 2.0)])
+    mean1 = np.mean(X[X < mean2 - np.sqrt(mean2) / 2.0])
 
     coeffs = fit_poissons_fixed_means(X, mean1, mean2)
     print("Alpha = {}".format(coeffs.x[0]))
@@ -189,24 +189,37 @@ def percent_upregulation(a):
     return 100.0*(1.0/(a+1.0))
 
 
-def get_weight_with_statistic(row, params):   # Returns a
-    coeffs_fm = fit_poissons_fixed_means(row, params["coeffs"].x[1], params["coeffs"].x[2])   # Use the statistic means
+def upregulation_from_gaussian(X, mean, std, min_zscore=2):
+    X = np.array(X)
+    return 100.0*np.size(X[X-mean > 0]) / np.size(X)
+
+def get_poisson_weight_with_statistic(row, params):   # Returns a
+    coeffs_fm = fit_poissons_fixed_means(row, params["coeffs"].x[1], params["coeffs"].x[2]) # Use the statistic means
     print("Optimality fm = {}".format(coeffs_fm.cost))
     return coeffs_fm.x[0]
 
 
+def plot_hist(row, label=""):
+    sns.histplot(row, binwidth=1, label=label, element="poly", fill=False)                 # Plot histogram for cluster
+
+
 def plot_two_poissons_from_params(row, params, color="r", label=""):   # Return the bins
-    bins = np.arange(np.min(row), np.max(row))
+    bins=np.arange(np.min(row), np.max(row))
     X, bins = np.histogram(row, bins=bins, density=True)   # Sample histogram to pull out bins
     mbins = (bins[1:] + bins[:-1]) / 2.0
-    sns.histplot(row, binwidth=1, label=label, element="poly", fill=False)                 # Plot histogram for cluster
+    plot_hist(row, label=label)
     plt.axvline(x=params["coeffs"].x[1], color=color)          # Show where the ref's distributions are
     plt.axvline(x=params["coeffs"].x[2], color=color)          # Show where the ref's distributions are
     return mbins
 
 
-def plot_poisson(row, params, color="r", alpha=0.05, min_dist=0.2, min_zscore = 2, label=""):
-    a = get_weight_with_statistic(row, params)
+def plot_predict(row, params, color="r", alpha=0.05, min_dist=0.2, min_zscore = 2, label=""):
+    if params["n"] == 1:
+        pt_up = upregulation_from_gaussian(row, params["coeffs"][0], params["coeffs"][1], min_zscore=min_zscore)
+        plot_hist(row, label=label+" +{:.0f}%".format(pt_up))
+        return pt_up
+
+    a = get_poisson_weight_with_statistic(row, params)
     params["coeffs"].x[0] = a                   # Update params with fitted a, this may side-effect
     pt_up = percent_upregulation(a)
     plot_two_poissons_from_params(row, params, label=label+" +{:.0f}%".format(pt_up))
@@ -215,8 +228,12 @@ def plot_poisson(row, params, color="r", alpha=0.05, min_dist=0.2, min_zscore = 
 
 def plot_fits(row, color="r", alpha=0.05, min_dist=0.2, min_zscore = 2, label=""):  # Return the fitted params
     params = fit_poissons(row, alpha=alpha, min_dist=min_dist, min_zscore=min_zscore)
-    pt_up = percent_upregulation(params["coeffs"].x[0])
-    bins = plot_two_poissons_from_params(row, params, label=label+" +{:.0f}%".format(pt_up))
+    if params["n"] == 1:
+        pt_up = upregulation_from_gaussian(row, params["coeffs"][0], params["coeffs"][1], min_zscore=min_zscore)
+        plot_hist(row, label=label+" +{:.0f}%".format(pt_up))
+    else:
+        pt_up = percent_upregulation(params["coeffs"].x[0])
+        bins = plot_two_poissons_from_params(row, params, label=label+" +{:.0f}%".format(pt_up))
     # plt.plot(bins, model2(bins, params["coeffs"].x), color+"x", label="Poisson fit")
     # a = params["coeffs"].x[0]
     # sc = (a+1.0)/a
