@@ -230,7 +230,7 @@ def plot_predict(row, params, color="r", alpha=0.05, min_dist=0.1, min_zscore = 
 def plot_fits(row, color="r", alpha=0.05, min_dist=0.1, min_zscore = 2, label=""):  # Return the fitted params
     params = fit_poissons(row, alpha=alpha, min_dist=min_dist, min_zscore=min_zscore)
     if params["n"] == 1:
-        pt_up = upregulation_from_gaussian(row, params["coeffs"][0], params["coeffs"][1], min_zscore=min_zscore)
+        pt_up = upregulation_from_gaussian(row, params["coeffs"][0])
         plot_hist(row, label=label+" +{:.0f}%".format(pt_up))
     else:
         pt_up = percent_upregulation(params["coeffs"].x[0])
