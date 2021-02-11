@@ -27,3 +27,10 @@ frontend:
       label: The gene ID (s) to use for coloring (comma separated... XIST, GAS7)
       description: Must be gene IDs appearing in the assay selected.
       default: ''
+    - min: 0.0
+      max: 100.0
+      step: 0.1
+      type: number
+      label: Certainty (I am x% certain that at least 30% are differentially expressing gene y in group 1 vs group 2)
+      injectInto: confint
+      default: 95.0

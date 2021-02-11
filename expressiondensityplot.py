@@ -111,7 +111,7 @@ def fit_poissons_fixed_means(X, lamb1, lamb2):
     return parameters
 
 
-def one_or_two_mixtures(X, alpha=0.05, min_dist=0.2, min_zscore=2):
+def one_or_two_mixtures(X, alpha=0.05, min_dist=0.1, min_zscore=2):
     column = np.array(X).reshape(-1, 1)
     gm = GM(n_components=2).fit(column)
     inv_map = trygmonvector(gm, X)
@@ -126,8 +126,6 @@ def one_or_two_mixtures(X, alpha=0.05, min_dist=0.2, min_zscore=2):
 
     mi1 = confint(inv_map[0], alpha=alpha)
     mi2 = confint(inv_map[1], alpha=alpha)
-    # zscore1 = abs(s.mean(inv_map[0])-s.mean(inv_map[1]))/(s.stdev(inv_map[1])+1e-16)
-    # zscore2 = abs(s.mean(inv_map[1])-s.mean(inv_map[0]))/(s.stdev(inv_map[0])+1e-16)
     if dist(mi1, mi2) <= min_dist or abs(gm.means_[1][0] - gm.means_[0][0]) / (max(gm.covariances_)[0][0]) < min_zscore:
         gm = GM(n_components=1).fit(column)
         mi = confint(X)
@@ -144,9 +142,10 @@ def one_or_two_mixtures(X, alpha=0.05, min_dist=0.2, min_zscore=2):
     return result
 
 # First transform X into log(X)+c such that it does not go below 0, X is a list
-def fit_poissons(X, alpha=0.05, min_dist=0.2, min_zscore=2):
+def fit_poissons(X, alpha=0.05, min_dist=0.1, min_zscore=2):
     if np.mean(X) < 5:  # Can't really form a good statistic
-        return {"n": 1, "coeffs": [np.mean(X), np.std(X)]}
+        meanbounds = sms.DescrStatsW(X).tconfint_mean(alpha=alpha)
+        return {"n": 1, "coeffs": [meanbounds[1]]}
     shift = np.min(X) - 1  # Needed later to shift back
     Xarr = np.log(X - shift)
     res = one_or_two_mixtures(Xarr.tolist(), alpha=0.05, min_dist=min_dist, min_zscore=min_zscore)
@@ -214,7 +213,7 @@ def plot_two_poissons_from_params(row, params, color="r", label=""):   # Return 
     return mbins
 
 
-def plot_predict(row, params, color="r", alpha=0.05, min_dist=0.2, min_zscore = 2, label=""):
+def plot_predict(row, params, color="r", alpha=0.05, min_dist=0.1, min_zscore = 2, label=""):
     if params["n"] == 1:
         pt_up = upregulation_from_gaussian(row, params["coeffs"][0], params["coeffs"][1], min_zscore=min_zscore)
         plot_hist(row, label=label+" +{:.0f}%".format(pt_up))
@@ -227,7 +226,7 @@ def plot_predict(row, params, color="r", alpha=0.05, min_dist=0.2, min_zscore = 
     return pt_up
 
 
-def plot_fits(row, color="r", alpha=0.05, min_dist=0.2, min_zscore = 2, label=""):  # Return the fitted params
+def plot_fits(row, color="r", alpha=0.05, min_dist=0.1, min_zscore = 2, label=""):  # Return the fitted params
     params = fit_poissons(row, alpha=alpha, min_dist=min_dist, min_zscore=min_zscore)
     if params["n"] == 1:
         pt_up = upregulation_from_gaussian(row, params["coeffs"][0], params["coeffs"][1], min_zscore=min_zscore)
@@ -235,11 +234,6 @@ def plot_fits(row, color="r", alpha=0.05, min_dist=0.2, min_zscore = 2, label=""
     else:
         pt_up = percent_upregulation(params["coeffs"].x[0])
         bins = plot_two_poissons_from_params(row, params, label=label+" +{:.0f}%".format(pt_up))
-    # plt.plot(bins, model2(bins, params["coeffs"].x), color+"x", label="Poisson fit")
-    # a = params["coeffs"].x[0]
-    # sc = (a+1.0)/a
-    # mn2 = params["coeffs"].x[2]
-    # plt.plot(bins, model1(bins, [mn2])/sc, "bx", label="Up-regulated fit")      # Show upregulated total
     return params
 
 
@@ -254,6 +248,9 @@ def main():
     df = gn.pandas_from_assay(gn.get_import("assay"))
     gene_ids = parse(gn.get_arg("gene_ids"))
     groups = gn.get_import("groups")
+    alpha = 1.0-gn.get_arg("confint")/100.0
+    min_zscore = st.norm.ppf(gn.get_arg("confint"))
+    min_dist = 0.1
 
     coords = sample_coords.get("coords")
     dim_names = sample_coords.get("dimNames")
@@ -265,7 +262,7 @@ def main():
     for gene in gene_ids:
         plt.figure()
         # First form a statistic for all values, also puts out plot
-        params = plot_fits(df.loc[gene, :].to_list(), color="r", alpha=0.05, min_dist=0.1, min_zscore=2, label="All")
+        params = plot_fits(df.loc[gene, :].to_list(), color="r", alpha=alpha, min_dist=min_dist, min_zscore=min_zscore, label="All")
         for k, v in inv_map.items():
 
             plt.subplot(1, 1, 1)
