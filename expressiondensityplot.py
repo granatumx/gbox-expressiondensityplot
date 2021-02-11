@@ -13,6 +13,7 @@ import seaborn as sns
 from scipy.stats import poisson
 from scipy.optimize import least_squares
 import statistics as s
+import scipy.stats as st
 import statsmodels.stats.api as sms
 
 from sklearn.mixture import GaussianMixture as GM
