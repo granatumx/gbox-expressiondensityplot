@@ -201,7 +201,7 @@ def get_poisson_weight_with_statistic(row, params):   # Returns a
 
 
 def plot_hist(row, label=""):
-    sns.histplot(row, binwidth=1, label=label, element="poly", fill=False)                 # Plot histogram for cluster
+    sns.histplot(row, binwidth=0.5, label=label, element="poly", fill=False, kde=True)                 # Plot histogram for cluster
 
 
 def plot_two_poissons_from_params(row, params, color="r", label=""):   # Return the bins
