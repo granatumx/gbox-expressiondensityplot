@@ -263,12 +263,12 @@ def main():
     for gene in gene_ids:
         plt.figure()
         # First form a statistic for all values, also puts out plot
-        params = plot_fits(df.loc[gene, :].to_list(), color="r", alpha=alpha, min_dist=min_dist, min_zscore=min_zscore, label="All")
+        params = plot_fits(df.loc[gene, :].dropna().to_list(), color="r", alpha=alpha, min_dist=min_dist, min_zscore=min_zscore, label="All")
         for k, v in inv_map.items():
 
             plt.subplot(1, 1, 1)
             plt.title('Gene expression level distribution for each cluster')
-            plot_predict(df.loc[gene, v].to_list(), params, label=k)
+            plot_predict(df.loc[gene, v].dropna().to_list(), params, label=k)
             # sns.distplot(df.loc[gene,:].to_list(), bins=int(100), color = 'darkblue', kde_kws={'linewidth': 2})
             plt.ylabel('Frequency')
             plt.xlabel('Gene expression')
